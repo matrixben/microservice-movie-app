@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Logout from Movie</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript"
+            src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <script type="text/javascript">
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+    </script>
+</head>
+<body>
+
+    <form th:action="@{/logout}" method="post">
+        <p><input type="submit" value="登出"></p>
+        <!-- thymeleaf的csrf格式和jsp不一样
+        <input type="hidden" id="${_csrf.parameterName}"
+               name="${_csrf.parameterName}" value="${_csrf.token}">-->
+    </form>
+
+</body>
+</html>
