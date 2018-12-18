@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>List of All Movies</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p>List of movies:</p>
+<ul th:each="movie : ${movieList}">
+    <li ><a th:href="@{'/movie/' + ${movie.movieId}}">
+        <p th:text="${movie.movieName}"></p>
+    </a></li>
+</ul>
+</body>
+</html>

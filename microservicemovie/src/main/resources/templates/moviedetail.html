@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>The Detail of movie</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript"
+            src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!-- $.post方法traditional默认为true即深度序列化入参值，使得spring无法识别数组 -->
+    <script type="text/javascript">
+        function purchase(){
+            var params = {
+                userId : 1,
+                scheduleId : 1,
+                seatsId : [10,11]
+            };
+            $.ajax({type : 'post',
+                    traditional : true,
+                    url : '/sendorder',
+                    data : params,
+                    success : function(data){
+                                alert("订单号: " + data);
+                            }
+            });
+        }
+    </script>
+    <!-- 点击购票跳转到另一个页面 -->
+    <script type="text/javascript">
+        print_data = function (movieName, movieMin){
+            alert("名称：" + movieName +
+                  "\n时长：" + movieMin + "min");
+        }
+    </script>
+</head>
+<body>
+    <p th:text="'电影名称:' + ${movie.movieName}"></p>
+    <p th:text="'导演:' + ${movie.director}"></p>
+    <p th:text="'主演:' + ${movie.mainActor}"></p>
+    <p th:text="'电影时长:' + ${movie.durationMin} + 'mins'"></p>
+    <p th:text="'描述:' + ${movie.description}"></p>
+    <a href="#" th:onclick="|javascript:print_data('${movie.movieName}','${movie.durationMin}');|">购票</a>
+</body>
+</html>

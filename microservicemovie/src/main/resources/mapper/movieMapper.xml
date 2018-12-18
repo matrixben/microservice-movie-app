@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jason.luo.dao.MovieDao">
+    <select id="getMovie" parameterType="int" resultType="movie">
+        select * from movie where movie_id = #{id}
+    </select>
+    <select id="getAllMovies" resultType="movie">
+        select movie_id, movie_name from movie order by movie_id
+    </select>
+    <select id="getSchedulePrice" parameterType="int" resultType="java.math.BigDecimal">
+        select schedule_price from movie_schedule where schedule_id = #{id}
+    </select>
+    <select id="checkSeats" resultType="int">
+        select count(*) from movie_order mo
+        inner join order_seat os on mo.order_id = os.order_id
+        where mo.schedule_id = #{scheduleId} and os.seat_id in
+        <foreach collection="array" item="seatId" open="(" separator="," close=")">
+            #{seatId}
+        </foreach>
+    </select>
+    <insert id="createOrder" parameterType="jason.luo.domain.MovieOrder">
+        insert into movie_order (user_id,schedule_id,seat_number,total_price,buy_datetime)
+        values (#{userId}, #{scheduleId}, #{seatNumber}, #{totalPrice}, now());
+        <selectKey resultType="int" order="AFTER" keyProperty="orderId">
+            select currval(pg_get_serial_sequence('movie_order','order_id')) as orderId
+        </selectKey>
+    </insert>
+    <insert id="bookSeat">
+        insert into order_seat (order_id, seat_id)
+        values (#{orderId}, #{seatId})
+    </insert>
+</mapper>
