@@ -1,5 +1,11 @@
+# idea file
+.idea/
+*.iml
+target/
+
 # mac file
 .DS_Store
+
 # Compiled class file
 *.class
 
