@@ -7,10 +7,12 @@
         select user_id,username,realname,age,user_email,class_id from movie_user where user_id = #{id}
     </select>
     <select id="getUserByName" parameterType="String" resultType="user">
-        select * from movie_user where username = #{name}
+        select user_id,username,realname,age,user_email,class_id
+        from movie_user where username = #{name}
     </select>
     <select id="getUserByClassName" parameterType="String" resultType="user">
-        select u.* from movie_user u
+        select u.user_id,u.username,u.realname,u.age,u.user_email,u.class_id
+        from movie_user u
         inner join user_class c on u.class_id=c.class_id
         where c.class_name = #{name}
     </select>
