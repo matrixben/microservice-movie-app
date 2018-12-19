@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
  * 电影微服务
  * 表结构参考: https://blog.csdn.net/johnli1989/article/details/79491519
  * TODO: 单元测试,页面保存用户信息,auth2权限管理
+ * 使用zuul后，页面链接url也要改
  */
 @SpringBootApplication
 @EnableFeignClients
