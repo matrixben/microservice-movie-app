@@ -73,10 +73,10 @@ public class MovieApiController {
      * @return 订单id，-1表示下单失败
      */
     @PostMapping("/sendorder")
-    public int orderTickets(int userId, int scheduleId, Integer[] seatsId){
+    public int orderTickets(int userId, int scheduleId, int[] seatsId){
         int orderId = 0;
         //传统查询关系型数据库的方式无法准确处理高并发业务
-        orderId = movieService.orderSeats(userId, scheduleId, seatsId);
+        orderId = movieService.orderSeatsByRedis(userId, scheduleId, seatsId);
         //改用redis创建订单时,无法获得当前订单id,所以先自行创建id用于排序(或者直接使用有序列表)
         //在之后同步到postgres时再按id顺序插入
         //如果完全使用redis进行订单的查询和插入操作，则在同步到数据库之前，所有订单影响的数据都只能查redis

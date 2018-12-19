@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +47,8 @@ public class MovieService {
 
     /** 返回订单id，传统的下单流程*/
     @Transactional
-    public int orderSeats(int userId, int scheduleId, Integer[] seatsId) {
+    public int orderSeats(int userId, int scheduleId, int[] seatsId) {
+        Integer[] seatsId_Int = Arrays.stream(seatsId).boxed().toArray(Integer[]::new);
         //查询用户折扣
         BigDecimal discount = userFeignClient.getDiscountByUserId(userId);
         //查询此排片的单价
@@ -55,12 +57,12 @@ public class MovieService {
         int orderId = -1;
         synchronized (this){
             //查询此排片的选中座位是否已经被订了
-            if (movieDao.checkSeats(scheduleId, seatsId) != 0){
+            if (movieDao.checkSeats(scheduleId, seatsId_Int) != 0){
                 return -1;
             }
             //创建新的订单 insert
             MovieOrder newOrder = this.initMovieOrder(userId, scheduleId, seatsId.length, totPrice);
-            orderId = insertOneOrderAndItsSeats(newOrder, seatsId);
+            orderId = insertOneOrderAndItsSeats(newOrder, seatsId_Int);
         }
         return orderId;
     }
@@ -77,7 +79,7 @@ public class MovieService {
     }
 
     /** 下单成功返回1，失败返回0，使用redis和lua脚本*/
-    public Object orderSeatsByRedis(int userId, int scheduleId, int[] seatsId){
+    public int orderSeatsByRedis(int userId, int scheduleId, int[] seatsId){
         //不需要先加载所有排片和座位信息，因为入参数据都是准确的，从postgres数据库查出来的
         //查询用户折扣
         BigDecimal discount = userFeignClient.getDiscountByUserId(userId);
@@ -120,7 +122,7 @@ public class MovieService {
         //第一个是集合set，key是schedule_id的字符串, value是seat_id的字符串
         //第二个是order_list列表，使用逗号分割拼接字符串存储order
         //第三个是seat_list列表，存储此order的所有seat_id
-        return jedis.evalsha(sha1, 2, ""+userId, "scheduleId_"+scheduleId,
+        return (int) jedis.evalsha(sha1, 2, ""+userId, "scheduleId_"+scheduleId,
                 str_seats, ""+totPrice, dateStr, ORDER_LIST_KEY, SEAT_LIST_KEY);
     }
 
